@@ -65,6 +65,26 @@ server.shutdown  # closes the listener; alias `stop`
 | `#running?` | `true` while the accept loop is live |
 | `#status` | `:stopped`, `:running`, or `:stopping` |
 
+### Standalone: an echo server
+
+No Sinatra, no Rack env - just `Picobrick::Server` and an app that
+responds to `call(request)` with a `Picobrick::Request`:
+
+```ruby
+app = lambda do |request|
+  [200, { "content-type" => "text/plain" }, "#{request.method} #{request.path}\n#{request.body}"]
+end
+
+Picobrick::Server.new(app: app, port: 8899).start
+```
+
+```sh
+$ picoruby echo.rb &
+$ curl -X POST -d "hello" http://127.0.0.1:8899/echo
+POST /echo
+hello
+```
+
 `Picobrick::RackEnv` fills in the Rack SPEC pieces a server is responsible
 for (`rack.input`, `rack.errors`, `rack.url_scheme`,
 `rack.response_finished`, `SCRIPT_NAME`, `PATH_INFO`), normalizes a
