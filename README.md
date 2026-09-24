@@ -74,14 +74,22 @@ callbacks. `Picobrick::Error` (and its subclasses `BadRequest`,
 back; `Picobrick.reason_phrase(status)` looks up the standard reason
 phrase for a status code.
 
-## Where this is tested
+## Testing
 
-This gem doesn't (yet) carry its own test suite. Its behavior is exercised
-via [bash0C7/bash0c7-homepage](https://github.com/bash0C7/bash0c7-homepage)'s
-`test/picobrick_server_test.rb` (a real-socket test) and
-`test/picoruby/picobrick_*_test.rb` (the pure-Ruby request/response/env
-layer), where it's the default server behind a self-hosted
-[Sinatra](https://github.com/udzura/picoruby-sinatra-covers) admin console.
+```
+rake test
+```
+
+Fetches and builds a PicoRuby VM into `vendor/` (git-ignored, not pinned
+to any particular version) on first run, then runs `test/` against it
+with [picoruby-picotest](https://github.com/picoruby/picoruby/tree/master/mrbgems/picoruby-picotest).
+`rake clean` removes `vendor/`; `rake clean_test` runs both in sequence.
+
+`rake test` covers `Picobrick::Request`, `Picobrick::Response`, and
+`Picobrick::RackEnv` - the pure-Ruby layer with deterministic input and
+output. `Picobrick::Server` and `Picobrick::NonblockSocket` open a real
+socket and run on a `Task`; they aren't covered here and need a
+real-socket check in whatever app embeds this gem.
 
 ## License
 
